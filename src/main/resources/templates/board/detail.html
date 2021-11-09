@@ -21,7 +21,8 @@
 
     <div class="container">
         <h2>게시판</h2>
-        <table class="table">
+        <input id="board_bno" type="hidden" th:value="${board.bno}"/>
+        <table class="table board-table">
             <tr>
                 <th style="padding: 13px 0 0 15px;">제목</th>
                 <td>
@@ -50,10 +51,156 @@
                 <a type="button" class="btn btn-danger" th:href="@{/board/list}">취소</a>
             </form>
         </div>
+
+        <div class="comment-area">
+            <div class="comment-area-header">
+                <h5>
+                    댓글 <span id="total_comment_count" th:text="${commentsList.totalElements}"></span>개 &nbsp;
+                </h5>
+                <div class="comment-list">
+                    <div class="comment-line" id="comment-line" th:each="comment, i : ${commentsList}">
+                        <!-- <input type="hidden" id="commentIndex" th:value="${i.index}"/> -->
+                        <div class="commentHeader" th:id="'commentHeader_'+${i.index}">
+                            <input type="hidden" id="commentId" th:value="${comment.id}"/>
+                            <span id="commentWriter" th:text="${comment.user.username}">작성자</span>
+                            <span id="createDate" style="float: right;" th:if="${comment.createddate == comment.updatedate}" th:text="${#temporals.format(comment.createddate, 'yyyy-MM-dd HH:mm')}">작성일</span>
+                            <div class="comment-body" id="comment-body">
+                                <small class="comment-menu" th:if="${comment.user.username == username}">
+                                    <div class="comment-update-delete" style="text-align: right;">
+                                        <a class="update-comment" style="cursor: pointer;" th:onclick="updateComment([[${i.index}]], [[${comment.id}]], [[${comment.user.username}]], [[${comment.content}]])">수정</a>
+                                        <span id="middot">·</span>
+                                        <a class="delete-comment" th:onclick="deleteComment([[${comment.id}]])">삭제</a>
+                                    </div>
+                                </small>
+                                <div class="comment-content">
+                                    <span id="commentContent" th:text="${comment.content}"></span>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="comment-write-form-area">
+                <!-- <input type="hidden" name="user" sec:authentication="name"/> -->
+                <!-- <input type="text" name="user" th:text="${session.user}"/> -->
+                <textarea sec:authorize="!isAuthenticated()" name="content" id="comment-login" rows="4" class="form-control" placeholder="댓글이용은 로그인이 필요합니다." style="height: 150px" onclick="commentLogin()"></textarea>
+                <textarea sec:authorize="isAuthenticated()" name="content" id="comment-content" rows="4" class="form-control" placeholder="내용을 입력해주세요." style="height: 150px"></textarea>
+                <div id="comment-write-button-area">
+                    <button class="btn btn-primary pull-right btn-sm" type="submit" id="comment-post" onclick="saveComment();">댓글쓰기</button>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+    </script>
+
+    <script>
+        let boardBno = document.getElementById("board_bno").value;
+        let commentIndex = document.getElementById("comment-header").value;
+
+        function updateComment(commentIndex, commentId,commentWriter ,commentContent){
+            let htmls = '';
+
+            htmls += '<div class="comment-header" id="commentHeader_'+commentIndex+'">';
+            htmls += '    <input type="hidden" id="commentId" value="'+commentId+'"/>';
+            htmls += '    <span id="commentWriter">'+commentWriter+'</span>';
+            htmls += '    <span id="createDate" style="float: right;">작성일</span>';
+            htmls += '    <div class="comment-body" id="comment-body">';
+            htmls += '        <small class="comment-menu">';
+            htmls += '            <div class="comment-update-delete" style="text-align: right;">';
+            htmls += '                <a class="comment-content" style="cursor: pointer;" onclick="saveComment();">등록</a>';
+            htmls += '                <span id="middot">·</span>';
+            htmls += '                <a class="delete-comment" href="#" data-id="+idx+">취소</a>';
+            htmls += '            </div>';
+            htmls += '        </small>';
+            htmls += '        <textarea name="content" id="comment-content" rows="4" class="form-control" placeholder="내용을 입력해주세요." style="height: 150px">';
+            htmls +=             commentContent;
+            htmls += '</textarea>';
+            htmls += '    </div>';
+            htmls += '    <div class="clearfix"></div>';
+            htmls += '</div>';
+            document.getElementById("commentHeader_"+commentIndex).innerHTML = htmls;
+        }
+        function saveComment(){
+            const pararm = {
+                content : document.getElementById("comment-content").value,
+            }
+
+            fetch("/api/comments/" + boardBno, {
+                method : 'POST',
+                headers : {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pararm)
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('요청이 실패하였습니다...');
+                }
+
+                // alert('저장되었습니다');
+                // alert(response);
+                location.reload();
+
+            }).catch(error => {
+                alert(error)
+                alert('오류가 발생하였습니다.');
+            });
+        }
+
+        function deleteComment(commentId){
+
+            fetch("/api/comments/" + boardBno + "/" + commentId, {
+                method : 'DELETE',
+                headers : {
+                    'Content-Type': 'application/json',
+                },
+                //body: JSON.stringify(pararm)
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('요청이 실패하였습니다...');
+                }
+
+                // alert('저장되었습니다');
+                // alert(response);
+                location.reload();
+
+            }).catch(error => {
+                alert(error)
+                alert('오류가 발생하였습니다.');
+            });
+        }
+
+        function commentLogin(){
+            if(confirm("로그인하시겠습니까?")){
+                location.href = "/login";
+            }
+        }
+
+        function isValid(){
+            let commentContent = document.getElementById("comment-content");
+
+        }
+    </script>
+    <!-- <script>
+        function save(){
+            const form = document.getElementById('comment-write-form-area');
+            const params = {
+
+                content : comment-write-form-area.content.value,
+            }
+            fetch('/api/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params)
+            })
+        }
+    </script> -->
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--

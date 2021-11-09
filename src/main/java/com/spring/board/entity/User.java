@@ -13,11 +13,14 @@ import javax.persistence.ManyToMany;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @NoArgsConstructor
+@ToString(exclude = "roles") 
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

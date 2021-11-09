@@ -27,6 +27,10 @@ public class UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
+	public User toEntity(UserDTO userDto) {
+		return userRepository.findById(userDto.getId()).orElse(null);
+	}
+	
 	public void saveUser(UserDTO userDto) {
 		User user = new User();
 		

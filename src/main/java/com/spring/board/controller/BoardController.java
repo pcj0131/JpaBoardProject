@@ -23,14 +23,20 @@ import com.spring.board.dto.BoardDTO;
 import com.spring.board.dto.UserDTO;
 import com.spring.board.entity.Board;
 import com.spring.board.service.BoardService;
+import com.spring.board.service.CommentsService;
+import com.spring.board.service.UserService;
 
 @Controller
 @RequestMapping("/board")
 public class BoardController {
 	private final BoardService boardService;
+	private final CommentsService commentsService;
+	private final UserService userService;
 	
-	public BoardController(BoardService boardService) {
+	public BoardController(BoardService boardService, CommentsService commentsService, UserService userService) {
 		this.boardService = boardService;
+		this.commentsService = commentsService;
+		this.userService = userService;
 	}
 	
 	// 게시판 조회
@@ -60,12 +66,13 @@ public class BoardController {
 	
 	// 게시글 상세보기
 	@GetMapping("/{bno}")
-	public String detailBoard(@PathVariable("bno") Long bno, Model model, Authentication authentication) {
+	public String detailBoard(@PathVariable("bno") Long bno, Model model, Authentication authentication, @PageableDefault Pageable pageable) {
 		
 		BoardDTO boardDto = boardService.selectBoard(bno);
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		model.addAttribute("username", userDetails.getUsername());
 		model.addAttribute("board", boardDto);
+		model.addAttribute("commentsList", commentsService.findCommentsList(bno, pageable));
 		return "board/detail";
 	}
 	
@@ -91,5 +98,5 @@ public class BoardController {
 		boardService.deleteBoard(bno);
 		return "redirect:/board/list";
 	}
-
+	
 }

@@ -24,7 +24,7 @@ public class Role implements GrantedAuthority {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private String name;
+	private String name;							// ROLE_###
 
 	@ManyToMany
 	@JoinTable(

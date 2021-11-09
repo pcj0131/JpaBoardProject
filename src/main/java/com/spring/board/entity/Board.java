@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class Board {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long bno;
+	private Long bno;					// 글번호
 	
-	private String title;
-	private String content;
-	private String writer;
+	private String title;				// 제목
+	private String content;				// 내용
+	private String writer;				// 작성자
 	
 	@Builder
 	public Board(Long bno, String title, String content, String writer) {

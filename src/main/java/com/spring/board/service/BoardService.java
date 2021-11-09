@@ -57,6 +57,11 @@ public class BoardService {
 		return new BoardDTO(board);
 	}
 	
+	//글번호 가져오기
+	public Board findEntityByBno(Long bno) {
+		return boardRepository.findById(bno).get();
+	}
+	
 	// 글 작성, 수정
 	public Long save(BoardDTO boardDto) {
 		return boardRepository.save(boardDto.toEntity()).getBno();
