@@ -13,4 +13,4 @@ SpringBoot + JPA를 이용한 게시판 프로젝트
 ### 2. 주요 기능
 - 게시물, 댓글 CRUD
 - JPA 페이징
-- Security, Login API를 활용한 접근 제어
+- Security를 활용한 접근 제어
