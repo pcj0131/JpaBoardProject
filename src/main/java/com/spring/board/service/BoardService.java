@@ -37,14 +37,6 @@ public class BoardService {
 //		return boardList.stream().map(BoardDTO::new).collect(Collectors.toList());
 //	}
 	
-//	public List<BoardDTO> findBoardList(Pageable pageable){
-//		int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
-//		pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "bno"));
-//		Page<Board> boardList = boardRepository.findAll(pageable);
-//		
-//		return boardList.stream().map(BoardDTO::new).collect(Collectors.toList());
-//	}
-	
 	public Page<Board> findBoardList(Pageable pageable){
 		int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
 		pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "bno"));
