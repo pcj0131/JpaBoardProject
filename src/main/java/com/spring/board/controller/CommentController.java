@@ -44,16 +44,7 @@ public class CommentController {
 		this.userService = userService;
 		this.userRepository = userRepository;
 	}
-	
-	// 댓글 등록
-//	@PostMapping("/comments/{board_id}")
-//	public @ResponseBody ResponseEntity<?> insertComment(@PathVariable("board_id") Long bno, @RequestBody CommentsDTO commentsDto, HttpSession session) {
-//		UserDTO userDto = (UserDTO) session.getAttribute("user");
-//		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
-//		System.out.println(userDto.getId());
-//		//return ResponseEntity.ok(commentsService.save(commentsDto, boardService.findEntityByBno(bno), userService.toEntity(userDto)));
-//		return null;
-//	}
+
 	@GetMapping("/comments/{board_id}")
 	public ResponseEntity<?> insertComment(@PathVariable("board_id") Long bno, @PageableDefault Pageable pageable) {
 		return new ResponseEntity<>(commentsService.findCommentsList(bno, pageable), HttpStatus.OK);
